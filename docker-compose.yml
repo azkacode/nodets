@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  node_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      - PORT=3000
+      - DBHOST=127.0.0.1
+      - DBUSER=root
+      - DBNAME=dbname
+      - DBPASS=dbpass
+      - DBPORT=3306
+      - JWTSECRET=secret
+      - CLOUNINARY_CLOUD_NAME=cloudname
+      - CLOUNINARY_API_KEY=cloudapikey
+      - CLOUNINARY_API_SECRET=cloudapisecret
+      - REDISURL=redisurl
+    depends_on:
+      - redis
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8080:80"
+    depends_on:
+      - node_app
+
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
